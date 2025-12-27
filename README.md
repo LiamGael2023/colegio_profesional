@@ -1,282 +1,223 @@
-# Sistema de Gestión de Colegio Profesional
+# 🎓 Sistema de Gestión de Colegio Profesional
 
-Sistema integral de gestión para un colegio profesional con arquitectura desacoplada: **Backend en Spring Boot (API REST)** y **Frontend Administrativo en PHP MVC** (Consumidor de API), utilizando **MySQL** como base de datos única.
+Sistema completo de gestión para Colegios Profesionales desarrollado en **PHP 8.1 MVC puro** con MySQL 8.0.
 
-## Arquitectura del Sistema
+## 🚀 Opciones de Instalación
 
-```
-┌──────────────────────────────────────┐
-│     Frontend Web (PHP MVC)           │
-│  - Vistas (Bootstrap + jQuery)       │
-│  - Controladores PHP                 │
-│  - Servicios API Client (cURL)       │
-└──────────────┬───────────────────────┘
-               │
-               │ HTTP/JSON (API REST)
-               │ JWT Authentication
-               │
-┌──────────────▼───────────────────────┐
-│     Backend (Spring Boot)            │
-│  - Controllers REST                  │
-│  - Services (Business Logic)         │
-│  - Repositories (JPA)                │
-│  - Security (JWT)                    │
-│  - Scheduled Tasks (@Scheduled)      │
-└──────────────┬───────────────────────┘
-               │
-               │ JPA/Hibernate
-               │
-┌──────────────▼───────────────────────┐
-│        MySQL Database                │
-│  - personas                          │
-│  - colegiados                        │
-│  - aportaciones                      │
-│  - pagos                             │
-│  - usuarios                          │
-└──────────────────────────────────────┘
-```
+Puedes ejecutar este sistema de dos maneras:
 
-## Características Principales
+### 🐳 Opción 1: Docker (Recomendado)
+La forma más rápida y sencilla. Todo funciona con un solo comando.
 
-### 1. Gestión de Personas y Colegiados
-- ✅ Registro de personas (Público General)
-- ✅ Conversión de persona a colegiado
-- ✅ Asignación de número de colegiatura
-- ✅ Gestión de especialidades y universidades
-
-### 2. Sistema de Aportaciones
-- ✅ **Generación automática de cuotas mensuales** (@Scheduled)
-- ✅ Se ejecuta el día 1 de cada mes a las 00:01
-- ✅ Solo para colegiados HABILITADOS
-- ✅ **Regla anti-duplicados** (UNIQUE KEY: persona_id, mes, anio)
-- ✅ Pagos adelantados (creación manual de obligaciones futuras)
-- ✅ Verificación automática: `existsByPersonaIdAndMesAndAnio`
-
-### 3. Habilitación Automática
-- ✅ **Inhabilitación automática** por meses impagos
-- ✅ Proceso diario de verificación (@Scheduled a las 02:00 AM)
-- ✅ Configuración de meses de tolerancia
-- ✅ Actualización automática de contadores
-
-### 4. Módulo de Caja
-- ✅ Búsqueda de personas por DNI
-- ✅ Visualización de deudas pendientes
-- ✅ Selección múltiple de obligaciones
-- ✅ Procesamiento de pagos
-- ✅ Múltiples métodos de pago (Efectivo, Tarjeta, Yape, Plin, etc.)
-- ✅ Generación de comprobantes
-
-### 5. Seguridad
-- ✅ **Autenticación JWT** (JSON Web Tokens)
-- ✅ Compatible con Web y App Móvil
-- ✅ Roles de usuario (ADMIN, CAJERO, SECRETARIA, AUDITOR)
-- ✅ Tokens con expiración de 24 horas
-
-### 6. Reportes
-- ✅ Estados de cuenta históricos
-- ✅ Reportes unificados (público + colegiado)
-- ✅ Recaudación por período
-- ✅ Estadísticas de pagos
-
-## Tecnologías Utilizadas
-
-### Backend
-- **Java 17**
-- **Spring Boot 3.2.0**
-- **Spring Security + JWT**
-- **Spring Data JPA**
-- **MySQL Connector**
-- **Lombok**
-- **Maven**
-- **Springdoc OpenAPI (Swagger)**
-
-### Frontend
-- **PHP 8.x**
-- **Bootstrap 5**
-- **jQuery**
-- **Font Awesome**
-
-### Base de Datos
-- **MySQL 8.x**
-
-## Estructura del Proyecto
-
-```
-colegio_profesional/
-├── backend/                          # Backend Spring Boot
-│   ├── src/main/java/com/colegio/
-│   │   ├── controller/               # Controladores REST
-│   │   ├── service/                  # Servicios de negocio
-│   │   ├── repository/               # Repositorios JPA
-│   │   ├── model/                    # Entidades y DTOs
-│   │   ├── security/                 # Configuración de seguridad
-│   │   └── ColegioApplication.java
-│   ├── src/main/resources/
-│   │   └── application.yml           # Configuración
-│   └── pom.xml
-│
-├── frontend-php/                     # Frontend PHP MVC
-│   ├── config/                       # Configuración
-│   ├── controllers/                  # Controladores PHP
-│   ├── services/                     # Servicios API Client
-│   ├── views/                        # Vistas HTML/PHP
-│   └── public/                       # Archivos públicos
-│
-├── database/                         # Scripts de base de datos
-│   └── schema.sql                    # Schema completo
-│
-└── README.md                         # Este archivo
-```
-
-## Instalación y Configuración
-
-### Requisitos Previos
-- Java 17 o superior
-- MySQL 8.0 o superior
-- PHP 8.0 o superior
-- Maven 3.6+
-- Servidor web (Apache/Nginx) con PHP
-
-### 1. Base de Datos
+**[📖 Ver Instrucciones Docker](README_DOCKER.md)**
 
 ```bash
-# Crear la base de datos
-mysql -u root -p < database/schema.sql
+docker-compose up -d
+# Acceder a: http://localhost:8080
 ```
 
-### 2. Backend (Spring Boot)
+### 💻 Opción 2: XAMPP (Manual)
+Para desarrollo local o servidores con XAMPP/WAMP.
+
+**[📖 Ver Instrucciones XAMPP](README_PHP_MVC.md)**
+
+## ⚡ Inicio Rápido con Docker
 
 ```bash
-# Navegar al directorio backend
-cd backend
+# 1. Clonar repositorio
+git clone https://github.com/LiamGael2023/colegio_profesional.git
+cd colegio_profesional
 
-# Configurar application.yml
-# Editar src/main/resources/application.yml
-# Actualizar las credenciales de MySQL
+# 2. Levantar contenedores
+docker-compose up -d
 
-# Compilar
-mvn clean install
-
-# Ejecutar
-mvn spring-boot:run
-
-# El backend estará disponible en: http://localhost:8080/api
+# 3. Acceder al sistema
+# URL: http://localhost:8080
+# Usuario: admin
+# Contraseña: admin123
 ```
 
-### 3. Frontend (PHP)
+## ✨ Características Principales
 
-```bash
-# Configurar PHP
-cd frontend-php
+### 👥 Gestión de Personas
+- Alta de personas (DNI, nombres, dirección, teléfono, email)
+- Búsqueda por DNI o nombre
+- Edición y actualización de datos
+- Validación de DNI único
 
-# Editar config/config.php
-# Actualizar la URL del backend si es necesario
+### 🎓 Gestión de Colegiados
+- Conversión de persona a colegiado
+- Asignación de número de colegiatura
+- Registro de fecha de colegiatura
+- Especialidades y subespecialidades
+- Estados: Habilitado/Inhabilitado automático
 
-# Configurar servidor web (Apache ejemplo)
-# DocumentRoot: /path/to/colegio_profesional/frontend-php/public
+### 💰 Sistema de Cuotas
+- Generación automática mensual (día 1 de cada mes)
+- Cuota mensual configurable (default: S/. 150.00)
+- **Anti-duplicados**: Restricción única por persona/mes/año
+- Estados: Pendiente/Pagado/Vencido
+- Tolerancia de impago configurable (default: 3 meses)
 
-# Acceder a: http://localhost/login.php
+### 🏦 Caja y Pagos
+- Procesamiento de pagos múltiples obligaciones
+- Generación automática de recibos
+- Historial completo de pagos por colegiado
+- Resumen diario de recaudación
+- Métodos de pago: Efectivo, Transferencia, Tarjeta
+
+### 📊 Reportes y Consultas
+- Estado de cuenta por colegiado
+- Deudas pendientes
+- Recaudación diaria/mensual/anual
+- Listado de habilitados/inhabilitados
+- Auditoría de operaciones
+
+### 🔐 Seguridad
+- Autenticación con PHP sessions
+- Contraseñas hasheadas con `password_hash()`
+- Prepared statements (PDO)
+- Control de acceso por roles (Admin/Cajero)
+- Auditoría de cambios
+
+## 🗄️ Estructura de la Base de Datos
+
+```sql
+personas          -- Datos personales básicos
+colegiados        -- Información de colegiación
+aportaciones      -- Cuotas mensuales (con UNIQUE KEY anti-duplicados)
+pagos             -- Registro de pagos
+detalle_pagos     -- Detalle de cada pago
+usuarios          -- Usuarios del sistema
+configuracion     -- Parámetros del sistema
+auditoria         -- Log de operaciones
 ```
 
-### Usuarios por Defecto
+## 🏗️ Arquitectura
 
-El sistema incluye dos usuarios precargados:
-
-| Usuario | Contraseña | Rol   |
-|---------|-----------|-------|
-| admin   | admin123  | ADMIN |
-| cajero  | admin123  | CAJERO|
-
-## API Endpoints
-
-### Autenticación
 ```
-POST   /auth/login              # Login
-GET    /auth/validate           # Validar token
-GET    /auth/health             # Health check
-```
-
-### Personas
-```
-GET    /personas                # Listar todas
-GET    /personas/{id}           # Obtener por ID
-GET    /personas/dni/{dni}      # Buscar por DNI
-GET    /personas/buscar?criterio=xxx  # Búsqueda general
-POST   /personas                # Crear
-PUT    /personas/{id}           # Actualizar
-DELETE /personas/{id}           # Desactivar
+frontend-php/
+├── config/           # Configuración y autoloader
+├── controllers/      # Lógica de negocio
+│   ├── AuthController.php
+│   ├── BuscadorController.php
+│   ├── CajaController.php
+│   └── ColegiadoController.php
+├── models/           # Acceso a datos (PDO)
+│   ├── Usuario.php
+│   ├── Persona.php
+│   ├── Colegiado.php
+│   ├── Aportacion.php
+│   └── Pago.php
+├── views/            # Interfaz de usuario
+├── helpers/          # Utilidades (Database.php)
+├── public/           # Assets (CSS, JS, imágenes)
+└── .htaccess         # Configuración Apache
 ```
 
-### Colegiados
-```
-GET    /colegiados              # Listar todos
-POST   /colegiados/convertir    # Convertir persona a colegiado
-GET    /colegiados/{id}         # Obtener por ID
-GET    /colegiados/numero/{num} # Obtener por número
-GET    /colegiados/habilitados  # Listar habilitados
-PATCH  /colegiados/{id}/habilitar    # Habilitar
-PATCH  /colegiados/{id}/inhabilitar  # Inhabilitar
-```
+## 🔧 Tecnologías
 
-### Aportaciones
-```
-GET    /aportaciones/pendientes/{personaId}  # Pendientes
-GET    /aportaciones/deuda/{personaId}       # Total deuda
-POST   /aportaciones/manual                  # Crear manual
-POST   /aportaciones/adelantadas             # Pagos adelantados
-POST   /aportaciones/generar                 # Generar cuotas (ADMIN)
-DELETE /aportaciones/{id}                    # Anular (ADMIN)
-```
+- **Backend**: PHP 8.1 (MVC puro, sin frameworks)
+- **Base de Datos**: MySQL 8.0
+- **Servidor Web**: Apache 2.4
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Containerización**: Docker & Docker Compose
+- **Seguridad**: PDO Prepared Statements, password_hash()
 
-### Pagos
-```
-POST   /pagos                      # Procesar pago
-GET    /pagos/{id}                 # Obtener por ID
-GET    /pagos/persona/{personaId}  # Historial
-GET    /pagos/hoy                  # Pagos del día
-GET    /pagos/recaudado?fechaInicio=xxx&fechaFin=xxx
-```
+## 📦 Servicios Docker
 
-## Documentación Swagger
+| Servicio | Puerto | Descripción |
+|----------|--------|-------------|
+| Web (Apache+PHP) | 8080 | Aplicación principal |
+| MySQL | 3306 | Base de datos |
+| phpMyAdmin | 8081 | Gestor de BD |
 
-Una vez iniciado el backend, la documentación interactiva está disponible en:
-```
-http://localhost:8080/api/swagger-ui.html
-```
-
-## Procesos Automáticos
+## 🔄 Tareas Automáticas
 
 ### Generación de Cuotas Mensuales
-- **Frecuencia**: Día 1 de cada mes a las 00:01
-- **Acción**: Genera obligaciones para todos los colegiados HABILITADOS
-- **Protección**: Verificación anti-duplicados automática
+El sistema incluye un modelo para generar cuotas automáticamente:
 
-### Verificación de Habilitaciones
-- **Frecuencia**: Todos los días a las 02:00 AM
-- **Acciones**:
-  - Actualiza contadores de meses impagos
-  - Inhabilita automáticamente colegiados que exceden tolerancia
+```php
+$aportacionModel = new Aportacion();
+$generadas = $aportacionModel->generarCuotasMensuales($mes, $anio);
+```
 
-## Configuración del Sistema
+**Configurar con Cron Job:**
+```bash
+0 0 1 * * /usr/bin/php /ruta/cron/generar_cuotas.php
+```
 
-Las configuraciones se almacenan en la tabla `configuracion`:
+Ver `README_PHP_MVC.md` para más detalles.
 
-| Clave | Valor Default | Descripción |
-|-------|--------------|-------------|
-| CUOTA_MENSUAL_DEFAULT | 150.00 | Monto de cuota mensual |
-| MESES_TOLERANCIA_IMPAGO | 3 | Meses antes de inhabilitar |
-| DIA_GENERACION_CUOTAS | 1 | Día de generación automática |
-| DIA_VENCIMIENTO_CUOTAS | 15 | Día de vencimiento |
+## 🎯 Flujo de Trabajo Típico
 
-## Contribución
+1. **Alta de Persona** → Búsqueda por DNI → Registro de datos
+2. **Conversión a Colegiado** → Número de colegiatura → Fecha de alta
+3. **Generación de Cuotas** → Automática (día 1 de cada mes)
+4. **Pago en Caja** → Búsqueda por DNI → Selección de deudas → Pago
+5. **Habilitación Automática** → Si está al día (≤3 meses impagos)
 
-Este proyecto fue desarrollado como parte del Sistema de Gestión de Colegio Profesional.
+## 👥 Usuarios por Defecto
 
-## Soporte
+| Usuario | Contraseña | Rol |
+|---------|------------|-----|
+| admin | admin123 | Administrador |
+| cajero | admin123 | Cajero |
 
-Para problemas o preguntas, crear un issue en el repositorio.
+**⚠️ IMPORTANTE**: Cambiar contraseñas en producción.
 
-## Licencia
+## 🐛 Solución de Problemas
 
-Propietario: Colegio Profesional
-Año: 2025
+### Docker
+```bash
+# Ver logs
+docker-compose logs -f
+
+# Reiniciar servicios
+docker-compose restart
+
+# Reconstruir
+docker-compose up -d --build
+```
+
+### XAMPP
+- Verificar que Apache y MySQL estén corriendo
+- Revisar `config.php` para credenciales de BD
+- Importar `database/schema.sql`
+
+## 📚 Documentación Adicional
+
+- [📖 Guía completa Docker](README_DOCKER.md)
+- [📖 Guía completa XAMPP/PHP](README_PHP_MVC.md)
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📝 Changelog
+
+### v1.0.0 (2025)
+- ✅ Migración completa a PHP MVC puro
+- ✅ Eliminación de dependencias Spring Boot
+- ✅ Implementación de modelos PDO
+- ✅ Sistema de autenticación con sesiones
+- ✅ Dockerización completa
+- ✅ Documentación exhaustiva
+
+## 📄 Licencia
+
+Este proyecto es de uso educativo y profesional.
+
+## 📞 Soporte
+
+Para reportar bugs o solicitar features:
+- [Crear Issue](https://github.com/LiamGael2023/colegio_profesional/issues)
+
+---
+
+**Desarrollado con ❤️ usando PHP, MySQL y Docker**

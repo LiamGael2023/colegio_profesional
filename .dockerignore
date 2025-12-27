@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Java/Maven (ya no se usa)
+backend/target
+backend/.mvn
+backend/mvnw
+backend/mvnw.cmd
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentación
+*.md
+!README_DOCKER.md

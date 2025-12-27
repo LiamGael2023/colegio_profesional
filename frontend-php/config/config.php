@@ -4,10 +4,11 @@
  */
 
 // Configuración de la base de datos MySQL
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'colegio_profesional');
-define('DB_USER', 'root');
-define('DB_PASS', ''); // En XAMPP por defecto está vacío
+// Soporta variables de entorno (Docker) o valores por defecto (XAMPP)
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'colegio_profesional');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: ''); // En XAMPP por defecto está vacío
 
 // Configuración de la aplicación
 define('APP_NAME', 'Colegio Profesional - Sistema de Gestión');

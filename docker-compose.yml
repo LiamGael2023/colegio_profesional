@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: colegio_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: colegio_profesional
+      MYSQL_USER: colegio_user
+      MYSQL_PASSWORD: colegio_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - colegio_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Aplicación PHP con Apache
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: colegio_web
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_NAME: colegio_profesional
+      DB_USER: colegio_user
+      DB_PASS: colegio_pass
+    volumes:
+      - ./frontend-php:/var/www/html/frontend-php
+    networks:
+      - colegio_network
+
+  # phpMyAdmin (opcional, para gestión de BD)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: colegio_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+    depends_on:
+      - db
+    networks:
+      - colegio_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  colegio_network:
+    driver: bridge
