@@ -6,21 +6,14 @@ require_once __DIR__ . '/../config/config.php';
  */
 class BuscadorController
 {
-    private $personaService;
-    private $colegiadoService;
-    private $authService;
+    private $personaModel;
+    private $colegiadoModel;
 
     public function __construct()
     {
-        $this->authService = new AuthService();
-        $this->personaService = new PersonaService();
-        $this->colegiadoService = new ColegiadoService();
-
-        // Verificar autenticación
-        if (!$this->authService->isAuthenticated()) {
-            header('Location: /login.php');
-            exit;
-        }
+        requireAuth();
+        $this->personaModel = new Persona();
+        $this->colegiadoModel = new Colegiado();
     }
 
     /**
@@ -28,7 +21,10 @@ class BuscadorController
      */
     public function index()
     {
-        $user = $this->authService->getCurrentUser();
+        $user = [
+            'nombreCompleto' => $_SESSION['user_nombre'],
+            'rol' => $_SESSION['user_rol']
+        ];
         require_once VIEWS_PATH . '/buscador/index.php';
     }
 
@@ -46,16 +42,14 @@ class BuscadorController
             exit;
         }
 
-        $result = $this->personaService->buscarPorDni($dni);
+        $persona = $this->personaModel->buscarPorDni($dni);
 
-        if ($result['success']) {
-            $persona = $result['data'];
-
+        if ($persona) {
             // Verificar si es colegiado
-            $colegiadoResult = $this->colegiadoService->obtenerPorPersonaId($persona['id']);
-            $persona['esColegiado'] = $colegiadoResult['success'];
-            if ($colegiadoResult['success']) {
-                $persona['colegiado'] = $colegiadoResult['data'];
+            $colegiado = $this->colegiadoModel->obtenerPorPersonaId($persona['id']);
+            $persona['esColegiado'] = ($colegiado !== false);
+            if ($colegiado) {
+                $persona['colegiado'] = $colegiado;
             }
 
             echo json_encode(['success' => true, 'data' => $persona]);
@@ -79,9 +73,9 @@ class BuscadorController
             exit;
         }
 
-        $result = $this->personaService->buscar($criterio);
+        $personas = $this->personaModel->buscar($criterio);
 
-        echo json_encode($result);
+        echo json_encode(['success' => true, 'data' => $personas]);
         exit;
     }
 }

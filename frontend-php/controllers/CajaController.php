@@ -6,23 +6,18 @@ require_once __DIR__ . '/../config/config.php';
  */
 class CajaController
 {
-    private $personaService;
-    private $aportacionService;
-    private $pagoService;
-    private $authService;
+    private $personaModel;
+    private $aportacionModel;
+    private $pagoModel;
 
     public function __construct()
     {
-        $this->authService = new AuthService();
-        $this->personaService = new PersonaService();
-        $this->aportacionService = new AportacionService();
-        $this->pagoService = new PagoService();
-
         // Verificar autenticación
-        if (!$this->authService->isAuthenticated()) {
-            header('Location: /login.php');
-            exit;
-        }
+        requireAuth();
+
+        $this->personaModel = new Persona();
+        $this->aportacionModel = new Aportacion();
+        $this->pagoModel = new Pago();
     }
 
     /**
@@ -30,7 +25,6 @@ class CajaController
      */
     public function index()
     {
-        $user = $this->authService->getCurrentUser();
         require_once VIEWS_PATH . '/caja/index.php';
     }
 
@@ -48,9 +42,9 @@ class CajaController
             exit;
         }
 
-        $result = $this->aportacionService->obtenerPendientes($personaId);
+        $aportaciones = $this->aportacionModel->obtenerPendientes($personaId);
 
-        echo json_encode($result);
+        echo json_encode(['success' => true, 'data' => $aportaciones]);
         exit;
     }
 
@@ -73,7 +67,7 @@ class CajaController
             exit;
         }
 
-        $result = $this->pagoService->procesarPago($data);
+        $result = $this->pagoModel->procesar($data);
 
         echo json_encode($result);
         exit;
@@ -93,9 +87,9 @@ class CajaController
             exit;
         }
 
-        $result = $this->pagoService->obtenerHistorial($personaId);
+        $historial = $this->pagoModel->obtenerHistorial($personaId);
 
-        echo json_encode($result);
+        echo json_encode(['success' => true, 'data' => $historial]);
         exit;
     }
 
@@ -106,23 +100,17 @@ class CajaController
     {
         header('Content-Type: application/json');
 
-        $result = $this->pagoService->obtenerPagosDelDia();
+        $pagos = $this->pagoModel->obtenerPagosDelDia();
+        $total = array_sum(array_column($pagos, 'monto_total'));
 
-        if ($result['success']) {
-            $pagos = $result['data'];
-            $total = array_sum(array_column($pagos, 'montoTotal'));
-
-            echo json_encode([
-                'success' => true,
-                'data' => [
-                    'pagos' => $pagos,
-                    'totalPagos' => count($pagos),
-                    'totalRecaudado' => $total
-                ]
-            ]);
-        } else {
-            echo json_encode($result);
-        }
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'pagos' => $pagos,
+                'totalPagos' => count($pagos),
+                'totalRecaudado' => $total
+            ]
+        ]);
         exit;
     }
 }

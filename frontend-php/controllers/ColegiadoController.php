@@ -6,21 +6,16 @@ require_once __DIR__ . '/../config/config.php';
  */
 class ColegiadoController
 {
-    private $personaService;
-    private $colegiadoService;
-    private $authService;
+    private $personaModel;
+    private $colegiadoModel;
 
     public function __construct()
     {
-        $this->authService = new AuthService();
-        $this->personaService = new PersonaService();
-        $this->colegiadoService = new ColegiadoService();
-
         // Verificar autenticación
-        if (!$this->authService->isAuthenticated()) {
-            header('Location: /login.php');
-            exit;
-        }
+        requireAuth();
+
+        $this->personaModel = new Persona();
+        $this->colegiadoModel = new Colegiado();
     }
 
     /**
@@ -28,7 +23,6 @@ class ColegiadoController
      */
     public function index()
     {
-        $user = $this->authService->getCurrentUser();
         require_once VIEWS_PATH . '/colegiado/convertir.php';
     }
 
@@ -51,9 +45,13 @@ class ColegiadoController
             exit;
         }
 
-        $result = $this->colegiadoService->convertirPersonaAColegiado($data);
+        $success = $this->colegiadoModel->convertir($data);
 
-        echo json_encode($result);
+        if ($success) {
+            echo json_encode(['success' => true, 'message' => 'Persona convertida a colegiado exitosamente']);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Error al convertir a colegiado']);
+        }
         exit;
     }
 
@@ -62,10 +60,7 @@ class ColegiadoController
      */
     public function listar()
     {
-        $user = $this->authService->getCurrentUser();
-        $result = $this->colegiadoService->obtenerTodos();
-
-        $colegiados = $result['success'] ? $result['data'] : [];
+        $colegiados = $this->colegiadoModel->obtenerTodos();
 
         require_once VIEWS_PATH . '/colegiado/listar.php';
     }
