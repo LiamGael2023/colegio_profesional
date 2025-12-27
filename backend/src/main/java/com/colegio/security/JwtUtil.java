@@ -63,9 +63,8 @@ public class JwtUtil {
      * Extrae todos los claims del token
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
+        return Jwts.parser()
                 .setSigningKey(getSigningKey())
-                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
@@ -122,9 +121,8 @@ public class JwtUtil {
      */
     public Boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
+            Jwts.parser()
                     .setSigningKey(getSigningKey())
-                    .build()
                     .parseClaimsJws(token);
             return !isTokenExpired(token);
         } catch (Exception e) {
